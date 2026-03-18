@@ -1,1 +1,1 @@
-web: gunicorn slot.wsgi:application
+web: gunicorn slot.wsgi
