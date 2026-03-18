@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Your Bus Ticket{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Simple and human - no fancy stuff */
+    .welcome-box {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        margin-top: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        border: 1px solid #eee;
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .welcome-sub {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* Simple form */
+    .booking-form {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .form-row {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .form-label i {
+        color: #0066cc;
+        margin-right: 8px;
+        width: 18px;
+    }
+
+    /* Simple dropdowns - no fancy effects */
+    .simple-select {
+        width: 100%;
+        padding: 14px 18px;
+        background: #fafafa;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        color: #1a1a1a;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 18px center;
+    }
+
+    .simple-select:hover {
+        background-color: #f5f5f5;
+        border-color: #ccc;
+    }
+
+    .simple-select:focus {
+        outline: none;
+        border-color: #0066cc;
+        background-color: white;
+    }
+
+    /* Simple button */
+    .book-btn {
+        width: 100%;
+        padding: 16px;
+        background: #0066cc;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background 0.15s;
+    }
+
+    .book-btn:hover {
+        background: #0052a3;
+    }
+
+    .book-btn:active {
+        transform: scale(0.98);
+    }
+
+    /* Quick tip - subtle */
+    .tip {
+        margin-top: 30px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        color: #666;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .tip i {
+        color: #0066cc;
+        margin-right: 6px;
+    }
+
+    /* No animations, no gradients, just simple */
+    @media (max-width: 600px) {
+        .welcome-box {
+            padding: 25px;
+        }
+        
+        .welcome-title {
+            font-size: 1.6rem;
+        }
+        
+        .booking-form {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        
+        <!-- Simple welcome box -->
+        <div class="welcome-box">
+            <h1 class="welcome-title">
+                <i class="bi bi-bus-front" style="color: #0066cc; margin-right: 12px;"></i>
+                Book your Ticket Now!!!!!!
+            </h1>
+            <p class="welcome-sub">
+                HAPPY JOURNEY AHEAD! ✨
+            </p>
+
+            <!-- Simple form with just 2 dropdowns -->
+            <form class="booking-form" method="get" action="{% url 'seat_booking' %}">
+                
+                <!-- From dropdown -->
+                <div class="form-row">
+                    <label class="form-label">
+                        <i class="bi bi-geo-alt"></i> 
+                        From
+                    </label>
+                    <select name="source" class="simple-select" required>
+                        <option value="" disabled selected>Choose starting point</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Pune">Pune</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                    </select>
+                </div>
+
+                <!-- To dropdown -->
+                <div class="form-row">
+                    <label class="form-label">
+                        <i class="bi bi-pin-map"></i> 
+                        To
+                    </label>
+                    <select name="destination" class="simple-select" required>
+                        <option value="" disabled selected>Choose destination</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Pune">Pune</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                    </select>
+                </div>
+
+                <!-- Bus Type dropdown -->
+                <div class="form-row">
+                    <label class="form-label">
+                        <i class="bi bi-bus-front"></i> 
+                        Bus Type
+                    </label>
+                    <select name="bus_type" class="simple-select" required>
+                        <option value="" disabled selected>Select bus type</option>
+                        <option value="AC">AC Bus</option>
+                        <option value="NON_AC">Non-AC Bus</option>
+                        <option value="ALL">All Buses</option>
+                    </select>
+                </div>
+
+                <!-- Simple button -->
+                <button type="submit" class="book-btn">
+                    <i class="bi bi-search" style="margin-right: 8px;"></i>
+                    Find Buses
+                </button>
+            </form>
+
+            <!-- Simple tip -->
+            <div class="tip">
+                <i class="bi bi-info-circle"></i>
+                Popular route: Mumbai → Pune (2 hours)
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Just one small function - no fancy stuff
+    document.querySelectorAll('.simple-select').forEach(select => {
+        select.addEventListener('change', function() {
+            // Simple visual feedback - just border color
+            this.style.borderColor = '#0066cc';
+            setTimeout(() => {
+                this.style.borderColor = '#e0e0e0';
+            }, 200);
+        });
+    });
+</script>
+{% endblock %}

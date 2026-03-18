@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Successful{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .success-card {
+        background: white;
+        border-radius: 30px;
+        padding: 50px;
+        text-align: center;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+        max-width: 600px;
+        width: 100%;
+        animation: scaleIn 0.5s ease;
+    }
+
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .success-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        color: white;
+        font-size: 4rem;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 20px rgba(76, 175, 80, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+        }
+    }
+
+    .success-title {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .success-message {
+        color: #666;
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    .booking-details {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 20px;
+        padding: 30px;
+        margin: 30px 0;
+        text-align: left;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .detail-value {
+        color: #333;
+        font-weight: 500;
+    }
+
+    .booking-id {
+        background: #667eea;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 50px;
+        display: inline-block;
+        font-size: 1.3rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+        margin: 20px 0;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid #667eea;
+        color: #667eea;
+    }
+
+    .btn-outline:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-5px);
+    }
+
+    .print-btn {
+        background: #ff9800;
+        color: white;
+        border: none;
+    }
+
+    .print-btn:hover {
+        background: #f57c00;
+        transform: translateY(-5px);
+    }
+
+    @media (max-width: 768px) {
+        .success-card {
+            padding: 30px 20px;
+        }
+        
+        .success-title {
+            font-size: 2rem;
+        }
+        
+        .booking-id {
+            font-size: 1rem;
+            padding: 12px 20px;
+        }
+        
+        .btn-action {
+            padding: 12px 25px;
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-icon">
+            <i class="bi bi-check-lg"></i>
+        </div>
+        
+        <h1 class="success-title">Booking Successful!</h1>
+        <p class="success-message">
+            Thank you for choosing Bus Ticket Booking. Your seat has been confirmed.
+        </p>
+
+        <div class="booking-id">
+            <i class="bi bi-ticket"></i> {{ booking.booking_id }}
+        </div>
+
+        <div class="booking-details">
+            <h4 class="mb-4"><i class="bi bi-info-circle"></i> Booking Details</h4>
+            
+            <div class="detail-row">
+                <span class="detail-label">Passenger Name:</span>
+                <span class="detail-value">{{ booking.passenger.name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Bus Name:</span>
+                <span class="detail-value">{{ booking.bus.bus_name }} ({{ booking.bus.bus_number }})</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Seat Number:</span>
+                <span class="detail-value">{{ booking.seat.seat_number }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Seat Type:</span>
+                <span class="detail-value">{{ booking.seat.get_seat_type_display }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">From - To:</span>
+                <span class="detail-value">{{ booking.bus.source }} → {{ booking.bus.destination }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Travel Date:</span>
+                <span class="detail-value">{{ booking.travel_date|date:"d M Y" }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Departure Time:</span>
+                <span class="detail-value">{{ booking.bus.departure_time|date:"h:i A" }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Total Amount:</span>
+                <span class="detail-value">₹{{ booking.total_amount }}</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{% url 'seat_booking' %}" class="btn-action btn-primary">
+                <i class="bi bi-bus-front"></i> Book Another
+            </a>
+            <a href="#" class="btn-action btn-outline" onclick="window.print()">
+                <i class="bi bi-printer"></i> Print Ticket
+            </a>
+            <a href="{% url 'home' %}" class="btn-action btn-outline">
+                <i class="bi bi-house"></i> Home
+            </a>
+        </div>
+
+        <p class="mt-4 text-muted">
+            <i class="bi bi-envelope"></i> 
+            Booking details have been sent to {{ booking.passenger.email }}
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add confetti effect on successful booking
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+
+        // Auto print dialog after 1 second (optional)
+        setTimeout(function() {
+            // Uncomment below line to auto-print
+            // window.print();
+        }, 1000);
+    });
+
+    // Simple confetti function
+    function confetti(options) {
+        // You can include a confetti library here
+        // For now, we'll create a simple confetti effect
+        for (let i = 0; i < options.particleCount; i++) {
+            createParticle(options.origin);
+        }
+    }
+
+    function createParticle(origin) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.width = '10px';
+        particle.style.height = '10px';
+        particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        particle.style.borderRadius = '50%';
+        particle.style.left = origin.x * window.innerWidth + 'px';
+        particle.style.top = origin.y * window.innerHeight + 'px';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '9999';
+        
+        document.body.appendChild(particle);
+        
+        const animation = particle.animate([
+            { transform: 'translate(0, 0)', opacity: 1 },
+            { transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 + 100}px)`, opacity: 0 }
+        ], {
+            duration: 2000,
+            easing: 'cubic-bezier(0, .9, .57, 1)'
+        });
+        
+        animation.onfinish = () => particle.remove();
+    }
+
+    // Save ticket as PDF (optional)
+    function saveAsPDF() {
+        // You can implement PDF generation here
+        alert('PDF download feature coming soon!');
+    }
+
+    // Share booking details
+    function shareBooking() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Bus Ticket Booking',
+                text: `Booking ID: {{ booking.booking_id }}\nBus: {{ booking.bus.bus_name }}\nSeat: {{ booking.seat.seat_number }}`,
+                url: window.location.href
+            });
+        } else {
+            alert('Share feature not supported in your browser');
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,715 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Your Seat{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Simple, humanized seat layout */
+    .bus-info {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .bus-route {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .route-point {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .route-point i {
+        color: #0066cc;
+        font-size: 1.2rem;
+    }
+
+    .route-point .time {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .route-point .place {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* Simple legend */
+    .seat-legend {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+        padding: 16px;
+        background: white;
+        border-radius: 8px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+    }
+
+    .legend-color.available { background: #e8f5e8; border: 1px solid #4df756; }
+    .legend-color.booked { background: #ffebee; border: 1px solid #fc2828; }
+    .legend-color.selected { background: #e3f2fd; border: 1px solid #0077ff; }
+    .legend-color.window { background: #fff3e0; border: 1px solid #ef6c00; }
+    .legend-color.normal { background: #f3e5f5; border: 1px solid #b300ff; }
+
+    /* Bus layout - simple and clean */
+    .bus-container {
+        background: white;
+        border-radius: 12px;
+        padding: 30px 20px;
+        position: relative;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .driver-area {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        color: #495057;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .driver-area i {
+        color: #0066cc;
+        margin-right: 8px;
+    }
+
+    .seats-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .seat-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .row-label {
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 50%;
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+    }
+
+    .seats-left, .seats-right {
+        display: flex;
+        gap: 10px;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .seat-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .seat-btn {
+        width: 60px;
+        height: 60px;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        background: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .seat-btn.available {
+        background: #e8f5e8;
+        border-color: #2e7d32;
+        color: #1b5e20;
+    }
+
+    .seat-btn.available:hover:not(:disabled) {
+        background: #c8e6c9;
+        transform: scale(1.05);
+    }
+
+    .seat-btn.booked {
+        background: #ffebee;
+        border-color: #c62828;
+        color: #b71c1c;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .seat-btn.window {
+        background: #fff3e0;
+        border-color: #ef6c00;
+        color: #e65100;
+    }
+
+    .seat-btn.normal {
+        background: #f3e5f5;
+        border-color: #7b1fa2;
+        color: #4a148c;
+    }
+
+    .seat-btn:disabled {
+        cursor: not-allowed;
+    }
+
+    .seat-price {
+        font-size: 0.7rem;
+        color: #666;
+        margin-top: 4px;
+    }
+
+    .aisle {
+        width: 40px;
+        height: 60px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        position: relative;
+    }
+
+    .aisle::after {
+        content: '⏤⏤';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #adb5bd;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+    }
+
+    /* Simple modal */
+    .modal-content {
+        border: none;
+        border-radius: 16px;
+    }
+
+    .modal-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #eaeaea;
+        padding: 20px 24px;
+    }
+
+    .modal-header h5 {
+        color: #333;
+        font-weight: 600;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .seat-summary {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 24px;
+    }
+
+    .seat-summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed #dee2e6;
+    }
+
+    .seat-summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        color: #495057;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #0066cc;
+        box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+    }
+
+    .checkbox-group {
+        margin: 20px 0;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #495057;
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid #eaeaea;
+        background: #f8f9fa;
+    }
+
+    /* Responsive */
+    @media (max-width: 576px) {
+        .seat-btn {
+            width: 45px;
+            height: 45px;
+            font-size: 0.8rem;
+        }
+        
+        .aisle {
+            width: 25px;
+        }
+        
+        .row-label {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Bus Info -->
+<div class="bus-info">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h4 class="mb-2">{{ bus.bus_name }}</h4>
+            <p class="text-muted mb-3">{{ bus.bus_number }} • {{ bus.get_bus_type_display }}</p>
+        </div>
+        <div class="text-end">
+            <h5 class="text-primary mb-1">₹{{ bus.price_per_seat }}</h5>
+            <small class="text-muted">per seat</small>
+        </div>
+    </div>
+    
+    <div class="bus-route">
+        <div class="route-point">
+            <i class="bi bi-circle-fill text-success"></i>
+            <div>
+                <div class="time">{{ bus.departure_time|date:"h:i A" }}</div>
+                <div class="place">{{ bus.source }}</div>
+            </div>
+        </div>
+        <div class="route-point">
+            <i class="bi bi-arrow-right"></i>
+        </div>
+        <div class="route-point">
+            <i class="bi bi-geo-alt-fill text-danger"></i>
+            <div>
+                <div class="time">{{ bus.arrival_time|date:"h:i A" }}</div>
+                <div class="place">{{ bus.destination }}</div>
+            </div>
+        </div>
+        <div class="route-point">
+            <i class="bi bi-calendar"></i>
+            <div>
+                <div class="time">{{ bus.departure_time|date:"d M Y" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Seat Legend -->
+<div class="seat-legend">
+    <div class="legend-item">
+        <span class="legend-color available"></span>
+        <span>Available</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-color booked"></span>
+        <span>Booked</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-color window"></span>
+        <span>Window</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-color normal"></span>
+        <span>Normal</span>
+    </div>
+</div>
+
+<!-- Bus Layout -->
+<div class="bus-container">
+    <div class="driver-area">
+        <i class="bi bi-steering"></i> Driver
+    </div>
+    
+    <div class="seats-grid">
+        {% for row, seats in seat_layout.items %}
+        <div class="seat-row">
+            <div class="row-label">{{ row }}</div>
+            
+            <!-- Left side (2 seats) -->
+            <div class="seats-left">
+                {% for seat in seats %}
+                    {% if seat.seat_column <= 2 %}
+                    <div class="seat-wrapper">
+                        <button class="seat-btn {% if seat.status == 'BOOKED' %}booked{% else %}{% if seat.seat_type == 'WINDOW' %}window{% else %}available{% endif %}{% endif %}"
+                                onclick="openBookingModal({{ seat.id }})"
+                                {% if seat.status == 'BOOKED' %}disabled{% endif %}
+                                data-seat-id="{{ seat.id }}">
+                            {{ seat.seat_number }}
+                        </button>
+                        <span class="seat-price">₹{{ seat.price }}</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            <!-- Aisle -->
+            <!-- <div class="aisle"></div> -->
+            
+            <!-- Right side (2 seats) -->
+            <div class="seats-right">
+                {% for seat in seats %}
+                    {% if seat.seat_column > 2 %}
+                    <div class="seat-wrapper">
+                        <button class="seat-btn {% if seat.status == 'BOOKED' %}booked{% else %}{% if seat.seat_type == 'WINDOW' %}window{% else %}available{% endif %}{% endif %}"
+                                onclick="openBookingModal({{ seat.id }})"
+                                {% if seat.status == 'BOOKED' %}disabled{% endif %}
+                                data-seat-id="{{ seat.id }}">
+                            {{ seat.seat_number }}
+                        </button>
+                        <span class="seat-price">₹{{ seat.price }}</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-ticket"></i> Book Your Seat
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Seat Summary -->
+                <div class="seat-summary">
+                    <div class="seat-summary-item">
+                        <span>Seat Number:</span>
+                        <strong id="modalSeatNumber">-</strong>
+                    </div>
+                    <div class="seat-summary-item">
+                        <span>Seat Type:</span>
+                        <strong id="modalSeatType">-</strong>
+                    </div>
+                    <div class="seat-summary-item">
+                        <span>Price:</span>
+                        <strong class="text-primary" id="modalPrice">-</strong>
+                    </div>
+                </div>
+
+                <!-- Passenger Form -->
+                <form id="bookingForm" method="post" action="{% url 'confirm_booking' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="seat_id" id="seatId">
+                    
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" class="form-control" name="name" id="name" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Age</label>
+                                <input type="number" class="form-control" name="age" id="age" required min="1" max="120" placeholder="Age">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select class="form-control" name="gender" id="gender" required>
+                                    <option value="">Select</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                    <option value="O">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="email" id="email" required placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" class="form-control" name="phone" id="phone" required pattern="[0-9]{10}" placeholder="10-digit mobile number">
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="terms_accepted" id="terms" required>
+                            I accept the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmBookingBtn">
+                    <i class="bi bi-check-circle"></i> Confirm Booking
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Terms & Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3"><strong>1. Booking Policy:</strong> Seat confirmed only after successful booking.</p>
+                <p class="mb-3"><strong>2. Cancellation:</strong> Free cancellation up to 2 hours before departure.</p>
+                <p class="mb-3"><strong>3. Travel:</strong> Valid ID proof mandatory for all passengers.</p>
+                <p class="mb-3"><strong>4. Privacy:</strong> Your data is safe with us.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">Booking Successful!</h4>
+                <p class="text-muted" id="successMessage"></p>
+                <button type="button" class="btn btn-primary mt-3" onclick="window.location.reload()">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentModal;
+let successModal;
+
+$(document).ready(function() {
+    currentModal = new bootstrap.Modal(document.getElementById('bookingModal'));
+    successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    
+    // Confirm booking button click
+    $('#confirmBookingBtn').on('click', function() {
+        submitBooking();
+    });
+    
+    // Phone number validation
+    $('#phone').on('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+    });
+});
+
+// Open booking modal
+function openBookingModal(seatId) {
+    // Get seat details from button
+    const btn = $(`[data-seat-id="${seatId}"]`);
+    const seatNumber = btn.text().trim();
+    const price = btn.siblings('.seat-price').text().replace('₹', '');
+    
+    // Determine seat type from classes
+    let seatType = 'Normal';
+    if (btn.hasClass('window')) {
+        seatType = 'Window';
+    }
+    
+    // Update modal
+    $('#seatId').val(seatId);
+    $('#modalSeatNumber').text(seatNumber);
+    $('#modalSeatType').text(seatType);
+    $('#modalPrice').text('₹' + price);
+    
+    // Clear form
+    $('#bookingForm')[0].reset();
+    
+    // Show modal
+    currentModal.show();
+}
+
+// Submit booking
+function submitBooking() {
+    // Validate form
+    if (!validateForm()) {
+        return;
+    }
+    
+    // Show loading
+    const btn = $('#confirmBookingBtn');
+    const originalText = btn.html();
+    btn.html('<span class="spinner-border spinner-border-sm"></span> Processing...');
+    btn.prop('disabled', true);
+    
+    // Get form data
+    const formData = {
+        seat_id: $('#seatId').val(),
+        name: $('#name').val(),
+        age: $('#age').val(),
+        gender: $('#gender').val(),
+        email: $('#email').val(),
+        phone: $('#phone').val(),
+        terms_accepted: $('#terms').is(':checked') ? 'on' : '',
+        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+    };
+    
+    // Send AJAX request
+    $.ajax({
+        url: '{% url "confirm_booking" %}',
+        method: 'POST',
+        data: formData,
+        success: function(response) {
+            // Hide booking modal
+            currentModal.hide();
+            
+            // Show success message
+            if (response.success) {
+                $('#successMessage').text('Booking ID: ' + response.booking_id);
+                successModal.show();
+                
+                // Update seat button
+                $(`[data-seat-id="${formData.seat_id}"]`)
+                    .removeClass('available window')
+                    .addClass('booked')
+                    .prop('disabled', true);
+            } else {
+                alert(response.message || 'Booking failed. Please try again.');
+            }
+        },
+        error: function(xhr) {
+            let message = 'An error occurred. Please try again.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                message = xhr.responseJSON.message;
+            }
+            alert(message);
+        },
+        complete: function() {
+            btn.html(originalText);
+            btn.prop('disabled', false);
+        }
+    });
+}
+
+// Form validation
+function validateForm() {
+    // Name
+    if (!$('#name').val().trim()) {
+        alert('Please enter your name');
+        return false;
+    }
+    
+    // Age
+    const age = parseInt($('#age').val());
+    if (!age || age < 1 || age > 120) {
+        alert('Please enter a valid age');
+        return false;
+    }
+    
+    // Gender
+    if (!$('#gender').val()) {
+        alert('Please select gender');
+        return false;
+    }
+    
+    // Email
+    const email = $('#email').val();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+        alert('Please enter a valid email');
+        return false;
+    }
+    
+    // Phone
+    const phone = $('#phone').val();
+    if (!phone || phone.length !== 10) {
+        alert('Please enter a valid 10-digit phone number');
+        return false;
+    }
+    
+    // Terms
+    if (!$('#terms').is(':checked')) {
+        alert('Please accept terms and conditions');
+        return false;
+    }
+    
+    return true;
+}
+</script>
+{% endblock %}
